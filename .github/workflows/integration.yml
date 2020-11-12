@@ -1,18 +1,15 @@
 name: Build & Test
 on: [push]
-
 jobs:
   Build:
     runs-on: ubuntu-latest
     steps:
       - name: Checkout
         uses: actions/checkout@v2
-
       - name: Setup Node
         uses: actions/setup-node@v1
         with:
           node-version: '14'
-
       - name: Cache node_modules
         uses: actions/cache@v2
         env:
@@ -24,46 +21,39 @@ jobs:
             ${{ runner.os }}-build-${{ env.cache-name }}-
             ${{ runner.os }}-build-
             ${{ runner.os }}-
-
       - name: Install Dependencies
         run: npm install
-
-      - name: Create Production Buid
+      - name: Create Production Build
         run: npm run build
-
       - name: Upload Production Build
         uses: actions/upload-artifact@v2
         if: success()
-          width:
-            name: build
-            path: build/
+        with:
+          name: build
+          path: build/
   Test:
     runs-on: ubuntu-latest
     needs: Build
     steps:
-      - name: Checkoout
-        uses: action/checkout@v2
-
+      - name: Checkout
+        uses: actions/checkout@v2
       - name: Download Production Build
         uses: actions/download-artifact@v2
         with:
           name: build
-
-      - name: Crypress Tests
-        uses: crypress-io/github-actions@v2
-        width:
+      - name: Cypress Tests
+        uses: cypress-io/github-actions@v2
+        with:
           start: npm run serve
           wait-on: http://localhost:3000
-
-      - name: Upload screenshots
+      - name: Upload Screenshots
         uses: actions/upload-artifact@v2
         if: failure()
         with:
           name: cypress-screenshots
-          path: cypress/screeenshots
-
+          path: cypress/screenshots
       - name: Upload Recordings
-        uses: action/upload-artifact@v2
-        width:
+        uses: actions/upload-artifact@v2
+        with:
           name: cypress-videos
           path: cypress/videos
