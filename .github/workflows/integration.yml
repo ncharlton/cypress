@@ -42,7 +42,7 @@ jobs:
         with:
           name: build
       - name: Cypress Tests
-        uses: cypress-io/github-actions@v2
+        uses: cypress-io/github-action@v2
         with:
           start: npm run serve
           wait-on: http://localhost:3000
